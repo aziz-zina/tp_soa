@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0" />
+    <title>Service Logement</title>
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+            rel="stylesheet" />
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        .table-container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body onload="init()">
+<div class="container">
+    <h1 class="text-center">Tester Service Logement</h1>
+    <div class="card p-4 shadow-sm">
+        <div class="mb-3 row">
+            <label class="col-sm-3 col-form-label">Saisir Delegation:</label>
+            <div class="col-sm-6">
+                <input
+                        type="text"
+                        class="form-control"
+                        id="delegation" />
+            </div>
+            <div class="col-sm-3">
+                <button
+                        class="btn btn-primary"
+                        onclick="getDetails()">
+                    Rechercher
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table class="table table-striped table-bordered">
+            <thead class="table-dark">
+            <tr>
+                <th>Reference</th>
+                <th>Adresse</th>
+                <th>Gouvernorat</th>
+            </tr>
+            </thead>
+            <tbody id="logementTableBody">
+            <!-- Results will be inserted here -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    var xmlhttp;
+
+    function init() {
+        xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState == 4) {
+                if (xmlhttp.status == 200) {
+                    var resultat = JSON.parse(xmlhttp.responseText);
+                    var tableBody = document.getElementById("logementTableBody");
+                    tableBody.innerHTML = ""; // Clear previous results
+                    resultat.forEach((logement) => {
+                        let row = `<tr>
+                                <td>${logement.reference}</td>
+                                <td>${logement.adresse}</td>
+                                <td>${logement.gouvernorat}</td>
+                            </tr>`;
+                        tableBody.innerHTML += row;
+                    });
+                } else {
+                    alert("Error -> " + xmlhttp.responseText);
+                }
+            }
+        };
+    }
+
+    function getDetails() {
+        var delegation = document.getElementById("delegation").value;
+        var url = `http://localhost:8085/LogementRendezVous_Etudiant_war/api/logement?delegation=${delegation}`;
+        xmlhttp.open("GET", url, true);
+        xmlhttp.send();
+    }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
